@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Apply Track</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <h1>ApplyTrack</h1>
+      <p>Keep your job applications organised.</p>
+    </header>
+
+    <main>
+      <section>
+        <h2>Add an application</h2>
+        <p id="form-error" role="alert"></p>
+
+        <form>
+          <div>
+            <label for="company">Company</label>
+            <input type="text" id="company" name="company" required />
+          </div>
+          <div>
+            <label for="job-role">Job role</label>
+            <input type="text" id="job-role" name="job-role" required />
+          </div>
+
+          <button type="submit">Save application</button>
+        </form>
+      </section>
+      <section>
+        <h2>Your applications</h2>
+        <p id="empty-state" hidden>
+          No applications yet. Add your first application above.
+        </p>
+        <ul id="application-list"></ul>
+      </section>
+    </main>
+  </body>
+</html>
