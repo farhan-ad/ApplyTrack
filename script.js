@@ -88,37 +88,99 @@ function renderApplications() {
   }
 
   for (const application of applications) {
+    const cardError = document.createElement("p");
+    cardError.classList.add("card-error");
+    cardError.setAttribute("role", "alert");
+
     const item = document.createElement("li");
     item.classList.add("application-card");
+
     const details = document.createElement("span");
     details.textContent = `${application.company} — ${application.role}`;
+
     const statusBadge = document.createElement("span");
     const statusClass = `status-${application.status.toLowerCase()}`;
     statusBadge.classList.add(statusClass);
     statusBadge.classList.add("status-badge");
     statusBadge.textContent = application.status;
+
     const deleteButton = document.createElement("button");
     deleteButton.textContent = "Delete";
     deleteButton.type = "button";
     deleteButton.classList.add("delete-button");
-    item.append(details, statusBadge, deleteButton);
+
+    const statusSelect = document.createElement("select");
+    statusSelect.classList.add("status-select");
+
+    const cardActions = document.createElement("div");
+    cardActions.classList.add("card-actions");
+    cardActions.append(statusSelect, deleteButton);
+
+    item.append(details, statusBadge, cardActions, cardError);
     applicationList.append(item);
 
     deleteButton.addEventListener("click", function () {
+      cardError.textContent = "";
+
       const remainingApplications = applications.filter(
         function (savedApplication) {
           return savedApplication.id !== application.id;
         },
       );
+
       try {
         const applicationsJSON = JSON.stringify(remainingApplications);
         localStorage.setItem("applytrack-applications", applicationsJSON);
       } catch (error) {
-        formError.textContent =
+        cardError.textContent =
           "Couldn't delete this application. Please try again.";
+        cardError.scrollIntoView({ block: "nearest" });
         return;
       }
+
       applications = remainingApplications;
+      formError.textContent = "";
+      renderApplications();
+    });
+
+    for (const status of ["Applied", "Interview", "Offer", "Rejected"]) {
+      const option = document.createElement("option");
+      option.value = status;
+      option.textContent = status;
+      statusSelect.append(option);
+    }
+
+    statusSelect.value = application.status;
+    statusSelect.setAttribute(
+      "aria-label",
+      `Status for ${application.company} — ${application.role}`,
+    );
+
+    statusSelect.addEventListener("change", function () {
+      cardError.textContent = "";
+
+      const updatedApplications = applications.map(function (savedApplication) {
+        if (savedApplication.id === application.id) {
+          return {
+            ...savedApplication,
+            status: statusSelect.value,
+          };
+        }
+
+        return savedApplication;
+      });
+
+      try {
+        const applicationJSON = JSON.stringify(updatedApplications);
+        localStorage.setItem("applytrack-applications", applicationJSON);
+      } catch (error) {
+        statusSelect.value = application.status;
+        cardError.textContent =
+          "Couldn't update this status. Please try again.";
+        cardError.scrollIntoView({ block: "nearest" });
+        return;
+      }
+      applications = updatedApplications;
       formError.textContent = "";
       renderApplications();
     });
