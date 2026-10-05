@@ -114,3 +114,14 @@ button:hover {
   background-color: #fee2e2;
   color: #991b1b;
 }
+
+.delete-button {
+  background-color: #fee2e2;
+  color: #991b1b;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.delete-button:hover {
+  background-color: #fecaca;
+}

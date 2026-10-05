@@ -8,10 +8,23 @@ try {
   const savedApplicationsJSON = localStorage.getItem("applytrack-applications");
   if (savedApplicationsJSON !== null) {
     applications = JSON.parse(savedApplicationsJSON);
+
+    let idsAdded = false;
+
     for (const application of applications) {
       if (application.status === undefined) {
         application.status = "Applied";
       }
+
+      if (application.id === undefined) {
+        application.id = crypto.randomUUID();
+        idsAdded = true;
+      }
+    }
+
+    if (idsAdded) {
+      const applicationsJSON = JSON.stringify(applications);
+      localStorage.setItem("applytrack-applications", applicationsJSON);
     }
   }
 } catch (error) {
@@ -42,7 +55,12 @@ form.addEventListener("submit", function (event) {
     company: company,
     role: role,
     status: status,
+    id: crypto.randomUUID(),
   };
+
+  if (application.id === undefined) {
+    application.id = crypto.randomUUID();
+  }
 
   applications.push(application);
   try {
@@ -79,8 +97,31 @@ function renderApplications() {
     statusBadge.classList.add(statusClass);
     statusBadge.classList.add("status-badge");
     statusBadge.textContent = application.status;
-    item.append(details, statusBadge);
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "Delete";
+    deleteButton.type = "button";
+    deleteButton.classList.add("delete-button");
+    item.append(details, statusBadge, deleteButton);
     applicationList.append(item);
+
+    deleteButton.addEventListener("click", function () {
+      const remainingApplications = applications.filter(
+        function (savedApplication) {
+          return savedApplication.id !== application.id;
+        },
+      );
+      try {
+        const applicationsJSON = JSON.stringify(remainingApplications);
+        localStorage.setItem("applytrack-applications", applicationsJSON);
+      } catch (error) {
+        formError.textContent =
+          "Couldn't delete this application. Please try again.";
+        return;
+      }
+      applications = remainingApplications;
+      formError.textContent = "";
+      renderApplications();
+    });
   }
 }
 
