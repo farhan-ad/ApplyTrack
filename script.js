@@ -2,7 +2,13 @@ let applications = [];
 const form = document.querySelector("form");
 const formError = document.querySelector("#form-error");
 const emptyState = document.querySelector("#empty-state");
+const applicationSearch = document.querySelector("#application-search");
+const searchEmptyState = document.querySelector("#search-empty-state");
 let loadFailed = false;
+
+applicationSearch.addEventListener("input", function () {
+  renderApplications();
+});
 
 try {
   const savedApplicationsJSON = localStorage.getItem("applytrack-applications");
@@ -81,13 +87,32 @@ const applicationList = document.querySelector("#application-list");
 function renderApplications() {
   applicationList.replaceChildren();
 
+  const query = applicationSearch.value.trim().toLowerCase();
+
+  const visibleApplications = applications.filter(function (savedApplication) {
+    return (
+      savedApplication.company.toLowerCase().includes(query) ||
+      savedApplication.role.toLowerCase().includes(query)
+    );
+  });
+
+  if (
+    applications.length > 0 &&
+    visibleApplications.length === 0 &&
+    !loadFailed
+  ) {
+    searchEmptyState.hidden = false;
+  } else {
+    searchEmptyState.hidden = true;
+  }
+
   if (applications.length === 0 && !loadFailed) {
     emptyState.hidden = false;
   } else {
     emptyState.hidden = true;
   }
 
-  for (const application of applications) {
+  for (const application of visibleApplications) {
     const cardError = document.createElement("p");
     cardError.classList.add("card-error");
     cardError.setAttribute("role", "alert");
