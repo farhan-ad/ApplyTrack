@@ -133,9 +133,11 @@ function renderApplications() {
     deleteButton.textContent = "Delete";
     deleteButton.type = "button";
     deleteButton.classList.add("delete-button");
+    deleteButton.id = `delete-${application.id}`;
 
     const statusSelect = document.createElement("select");
     statusSelect.classList.add("status-select");
+    statusSelect.id = `status-${application.id}`;
 
     const cardActions = document.createElement("div");
     cardActions.classList.add("card-actions");
@@ -146,6 +148,16 @@ function renderApplications() {
 
     deleteButton.addEventListener("click", function () {
       cardError.textContent = "";
+
+      const currentIndex = visibleApplications.findIndex(
+        function (savedApplication) {
+          return savedApplication.id === application.id;
+        },
+      );
+
+      const focusApplication =
+        visibleApplications[currentIndex + 1] ||
+        visibleApplications[currentIndex - 1];
 
       const remainingApplications = applications.filter(
         function (savedApplication) {
@@ -165,7 +177,20 @@ function renderApplications() {
 
       applications = remainingApplications;
       formError.textContent = "";
-      renderApplications();
+
+      requestAnimationFrame(function () {
+        renderApplications();
+
+        if (focusApplication) {
+          const nextDeleteButton = document.querySelector(
+            `#delete-${focusApplication.id}`,
+          );
+
+          nextDeleteButton.focus();
+        } else {
+          applicationSearch.focus();
+        }
+      });
     });
 
     for (const status of ["Applied", "Interview", "Offer", "Rejected"]) {
@@ -205,9 +230,19 @@ function renderApplications() {
         cardError.scrollIntoView({ block: "nearest" });
         return;
       }
+
       applications = updatedApplications;
       formError.textContent = "";
-      renderApplications();
+
+      requestAnimationFrame(function () {
+        renderApplications();
+
+        const refreshedStatusSelect = document.querySelector(
+          `#status-${application.id}`,
+        );
+
+        refreshedStatusSelect.focus({ preventScroll: true });
+      });
     });
   }
 }
