@@ -121,6 +121,7 @@ function renderApplications() {
     item.classList.add("application-card");
 
     const details = document.createElement("span");
+    details.classList.add("application-details");
     details.textContent = `${application.company} — ${application.role}`;
 
     const statusBadge = document.createElement("span");
