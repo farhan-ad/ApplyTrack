@@ -2,6 +2,10 @@
 
 ApplyTrack is a simple job application tracker that helps users organise and keep track of the jobs they have applied for. It is useful for students and job seekers who want an easy way to manage their applications in one place.
 
+## Live demo
+
+[Try ApplyTrack](https://farhan-ad.github.io/ApplyTrack/)
+
 ## Features
 
 - Add new job applications
